@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="YASwP1" name="Project13" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20">
   <MAINGROUP id="jXVMvd" name="Project13">
     <GROUP id="{9599FCC3-1EB7-A668-23ED-93BE4AF42C8A}" name="Source">
       <FILE id="gYswd1" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -17,8 +17,8 @@
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Project13"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="Project13"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Project13" extraCompilerFlags="-std=c++2a"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Project13" extraCompilerFlags="-std=c++2a"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
@@ -35,6 +35,26 @@
         <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
+    <VS2019 targetFolder="Builds/VisualStudio2019">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" extraCompilerFlags="/std:c++20"/>
+        <CONFIGURATION isDebug="0" name="Release" extraCompilerFlags="/std:c++20"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2019>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
