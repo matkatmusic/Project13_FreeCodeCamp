@@ -38,6 +38,10 @@ struct ExtendedTabbedButtonBar : juce::TabbedButtonBar, juce::DragAndDropTarget,
     void mouseDown(const juce::MouseEvent& e) override;
     
     juce::TabBarButton* createTabButton (const juce::String& tabName, int tabIndex) override;
+private:
+    juce::TabBarButton* findDraggedItem(const SourceDetails& dragSourceDetails);
+    int findDraggedItemIndex(const SourceDetails& dragSourceDetails);
+    juce::Array<juce::TabBarButton*> getTabs();
 };
 
 struct HorizontalConstrainer : juce::ComponentBoundsConstrainer
