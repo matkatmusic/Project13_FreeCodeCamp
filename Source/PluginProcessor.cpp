@@ -219,6 +219,27 @@ void Project13AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumInputChannels();
+    
+    std::vector<juce::dsp::ProcessorBase*> dsp
+    {
+        &phaser,
+        &chorus,
+        &overdrive,
+        &ladderFilter,
+        &generalFilter
+    };
+    
+    for( auto p : dsp )
+    {
+        p->prepare(spec);
+        p->reset();
+    }
+    
 }
 
 void Project13AudioProcessor::releaseResources()
@@ -479,7 +500,7 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //TODO: Drag-To-Reorder GUI
     //TODO: GUI design for each DSP instance?
     //TODO: metering
-    //TODO: prepare all DSP
+    //[DONE]: prepare all DSP
     //TODO: wet/dry knob [BONUS]
     //TODO: mono & stereo versions [mono is BONUS]
     //TODO: modulators [BONUS]
