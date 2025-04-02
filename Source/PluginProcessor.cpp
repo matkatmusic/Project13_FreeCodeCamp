@@ -708,7 +708,7 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //[DONE]: filters are mono, not stereo.
     //TODO: Drag-To-Reorder GUI
     //[DONE]: snap dropped tabs to the correct position
-    //TODO: hide dragged tab image or stop dragging the tab and constrain dragged image to x axis only
+    //[DONE]: hide dragged tab image or stop dragging the tab and constrain dragged image to x axis only
     //TODO: restore tabs in GUI when loading settings
     //TODO: save/load preset [BONUS]
     //TODO: GUI design for each DSP instance?

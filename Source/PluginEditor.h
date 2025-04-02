@@ -52,6 +52,7 @@ private:
     int findDraggedItemIndex(const SourceDetails& dragSourceDetails);
     juce::Array<juce::TabBarButton*> getTabs();
     
+    juce::ScaledImage dragImage;
     juce::ListenerList<Listener> listeners;
 };
 
