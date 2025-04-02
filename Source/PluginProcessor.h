@@ -77,24 +77,31 @@ public:
     juce::AudioParameterFloat* phaserDepthPercent = nullptr;
     juce::AudioParameterFloat* phaserFeedbackPercent = nullptr;
     juce::AudioParameterFloat* phaserMixPercent = nullptr;
+    juce::AudioParameterBool* phaserBypass = nullptr;
     
     juce::AudioParameterFloat* chorusRateHz = nullptr;
     juce::AudioParameterFloat* chorusDepthPercent = nullptr;
     juce::AudioParameterFloat* chorusCenterDelayMs = nullptr;
     juce::AudioParameterFloat* chorusFeedbackPercent = nullptr;
     juce::AudioParameterFloat* chorusMixPercent = nullptr;
+    juce::AudioParameterBool* chorusBypass= nullptr;
     
     juce::AudioParameterFloat* overdriveSaturation = nullptr;
+    juce::AudioParameterBool* overdriveBypass = nullptr;
     
     juce::AudioParameterChoice* ladderFilterMode = nullptr;
     juce::AudioParameterFloat* ladderFilterCutoffHz = nullptr;
     juce::AudioParameterFloat* ladderFilterResonance = nullptr;
     juce::AudioParameterFloat* ladderFilterDrive = nullptr;
+    juce::AudioParameterBool* ladderFilterBypass = nullptr;
     
     juce::AudioParameterChoice* generalFilterMode = nullptr;
     juce::AudioParameterFloat* generalFilterFreqHz = nullptr;
     juce::AudioParameterFloat* generalFilterQuality = nullptr;
     juce::AudioParameterFloat* generalFilterGain = nullptr;
+    juce::AudioParameterBool* generalFilterBypass = nullptr;
+    
+    
 private:
     DSP_Order dspOrder;
     
