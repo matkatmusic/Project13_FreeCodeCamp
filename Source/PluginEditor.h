@@ -38,10 +38,21 @@ struct ExtendedTabbedButtonBar : juce::TabbedButtonBar, juce::DragAndDropTarget,
     void mouseDown(const juce::MouseEvent& e) override;
     
     juce::TabBarButton* createTabButton (const juce::String& tabName, int tabIndex) override;
+    
+    struct Listener
+    {
+        virtual ~Listener() = default;
+        virtual void tabOrderChanged( Project13AudioProcessor::DSP_Order newOrder ) = 0;
+    };
+    
+    void addListener(Listener* l);
+    void removeListener(Listener* l);
 private:
     juce::TabBarButton* findDraggedItem(const SourceDetails& dragSourceDetails);
     int findDraggedItemIndex(const SourceDetails& dragSourceDetails);
     juce::Array<juce::TabBarButton*> getTabs();
+    
+    juce::ListenerList<Listener> listeners;
 };
 
 struct HorizontalConstrainer : juce::ComponentBoundsConstrainer
@@ -64,18 +75,21 @@ private:
 
 struct ExtendedTabBarButton : juce::TabBarButton
 {
-    ExtendedTabBarButton(const juce::String& name, juce::TabbedButtonBar& owner);
+    ExtendedTabBarButton(const juce::String& name, juce::TabbedButtonBar& owner, Project13AudioProcessor::DSP_Option dspOption);
     juce::ComponentDragger dragger;
     std::unique_ptr<HorizontalConstrainer> constrainer;
     
     void mouseDown (const juce::MouseEvent& e) override;
 
     void mouseDrag (const juce::MouseEvent& e) override;
+    Project13AudioProcessor::DSP_Option getOption() const { return option; }
+private:
+    Project13AudioProcessor::DSP_Option option;
 };
 //==============================================================================
 /**
 */
-class Project13AudioProcessorEditor  : public juce::AudioProcessorEditor
+class Project13AudioProcessorEditor  : public juce::AudioProcessorEditor, ExtendedTabbedButtonBar::Listener
 {
 public:
     Project13AudioProcessorEditor (Project13AudioProcessor&);
@@ -85,6 +99,7 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    void tabOrderChanged( Project13AudioProcessor::DSP_Order newOrder ) override;
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.

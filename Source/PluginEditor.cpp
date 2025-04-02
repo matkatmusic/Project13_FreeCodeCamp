@@ -29,6 +29,22 @@ static juce::String getDSPOptionName(Project13AudioProcessor::DSP_Option option)
     
     return "NO SELECTION";
 }
+
+static Project13AudioProcessor::DSP_Option getDSPOptionFromName( juce::String name)
+{
+    if( name == "PHASE" )
+        return Project13AudioProcessor::DSP_Option::Phase;
+    if( name == "CHORUS" )
+        return Project13AudioProcessor::DSP_Option::Chorus;
+    if( name == "OVERDRIVE" )
+        return Project13AudioProcessor::DSP_Option::OverDrive;
+    if( name == "LADDERFILTER" )
+        return Project13AudioProcessor::DSP_Option::LadderFilter;
+    if( name == "GEN FILTER" )
+        return Project13AudioProcessor::DSP_Option::GeneralFilter;
+    
+    return Project13AudioProcessor::DSP_Option::END_OF_LIST;
+}
 //==============================================================================
 HorizontalConstrainer::HorizontalConstrainer(std::function<juce::Rectangle<int>()> confinerBoundsGetter, 
                                              std::function<juce::Rectangle<int>()> confineeBoundsGetter) :
@@ -80,7 +96,11 @@ void HorizontalConstrainer::checkBounds (juce::Rectangle<int>& bounds,
     }
 }
 //==============================================================================
-ExtendedTabBarButton::ExtendedTabBarButton(const juce::String& name, juce::TabbedButtonBar& owner) : juce::TabBarButton(name, owner)
+ExtendedTabBarButton::ExtendedTabBarButton(const juce::String& name,
+                                           juce::TabbedButtonBar& owner,
+                                           Project13AudioProcessor::DSP_Option dspOption) :
+juce::TabBarButton(name, owner),
+option(dspOption)
 {
     constrainer = std::make_unique<HorizontalConstrainer>([&owner](){ return owner.getLocalBounds(); },
                                                           [this](){ return getBounds(); });
@@ -216,6 +236,26 @@ void ExtendedTabbedButtonBar::itemDropped (const SourceDetails& dragSourceDetail
     DBG( "item dropped" );
     //find the dropped item.  lock the position in.
     resized();
+    
+    //notify of the new tab order
+    auto tabs = getTabs();
+    Project13AudioProcessor::DSP_Order newOrder;
+    
+    jassert(tabs.size() == newOrder.size());
+    for( size_t i = 0; i < tabs.size(); ++i )
+    {
+        auto tab = tabs[ static_cast<int>(i) ];
+        if( auto* etbb = dynamic_cast<ExtendedTabBarButton*>(tab) )
+        {
+            newOrder[i] = etbb->getOption();
+        }
+    }
+    
+    listeners.call([newOrder](Listener& l)
+    {
+        l.tabOrderChanged(newOrder);
+    });
+    
 }
 
 void ExtendedTabbedButtonBar::mouseDown(const juce::MouseEvent& e)
@@ -230,10 +270,21 @@ void ExtendedTabbedButtonBar::mouseDown(const juce::MouseEvent& e)
 
 juce::TabBarButton* ExtendedTabbedButtonBar::createTabButton (const juce::String& tabName, int tabIndex)
 {
-    auto etbb = std::make_unique<ExtendedTabBarButton>(tabName, *this);
+    auto dspOption = getDSPOptionFromName(tabName);
+    auto etbb = std::make_unique<ExtendedTabBarButton>(tabName, *this, dspOption);
     etbb->addMouseListener(this, false);
     
     return etbb.release();
+}
+
+void ExtendedTabbedButtonBar::addListener(Listener *l)
+{
+    listeners.add(l);
+}
+
+void ExtendedTabbedButtonBar::removeListener(Listener *l)
+{
+    listeners.remove(l);
 }
 
 //==============================================================================
@@ -265,11 +316,14 @@ Project13AudioProcessorEditor::Project13AudioProcessorEditor (Project13AudioProc
     
     addAndMakeVisible(dspOrderButton);
     addAndMakeVisible(tabbedComponent);
+    
+    tabbedComponent.addListener(this);
     setSize (400, 300);
 }
 
 Project13AudioProcessorEditor::~Project13AudioProcessorEditor()
 {
+    tabbedComponent.removeListener(this);
 }
 
 //==============================================================================
@@ -292,4 +346,9 @@ void Project13AudioProcessorEditor::resized()
     dspOrderButton.setBounds(bounds.removeFromTop(30).withSizeKeepingCentre(150, 30));
     bounds.removeFromTop(10);
     tabbedComponent.setBounds(bounds.withHeight(30));
+}
+
+void Project13AudioProcessorEditor::tabOrderChanged(Project13AudioProcessor::DSP_Order newOrder)
+{
+    audioProcessor.dspOrderFifo.push(newOrder);
 }
