@@ -707,6 +707,8 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //[DONE]: bypass DSP
     //[DONE]: filters are mono, not stereo.
     //TODO: Drag-To-Reorder GUI
+    //TODO: restore tabs in GUI when loading settings
+    //TODO: save/load preset [BONUS]
     //TODO: GUI design for each DSP instance?
     //TODO: metering
     //[DONE]: prepare all DSP
