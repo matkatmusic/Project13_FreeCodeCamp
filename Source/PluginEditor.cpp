@@ -103,17 +103,113 @@ ExtendedTabbedButtonBar::ExtendedTabbedButtonBar() : juce::TabbedButtonBar(juce:
 
 bool ExtendedTabbedButtonBar::isInterestedInDragSource (const SourceDetails& dragSourceDetails) 
 {
+    if( dynamic_cast<ExtendedTabBarButton*>( dragSourceDetails.sourceComponent.get() ) )
+        return true;
+    
     return false;
+}
+
+void ExtendedTabbedButtonBar::itemDragEnter(const SourceDetails &dragSourceDetails)
+{
+    DBG("ExtendedTabbedButtonBar::itemDragEnter");
+    juce::DragAndDropTarget::itemDragEnter(dragSourceDetails);
+}
+
+void ExtendedTabbedButtonBar::itemDragMove(const SourceDetails &dragSourceDetails)
+{
+    if( auto tabButtonBeingDragged = dynamic_cast<ExtendedTabBarButton*>( dragSourceDetails.sourceComponent.get() ) )
+    {
+        auto numTabs = getNumTabs();
+        auto tabs = juce::Array<juce::TabBarButton*>();
+        tabs.resize(numTabs);
+        for( int i = 0; i < numTabs; ++i )
+        {
+            tabs.getReference(i) = getTabButton(i);
+        }
+        
+        auto idx = tabs.indexOf(tabButtonBeingDragged);
+        if( idx == -1 )
+        {
+            DBG( "failed to find tab being dragged in list of tabs");
+            jassertfalse;
+            return;
+        }
+        
+        //find the tab that tabButtonBeingDragged is colliding with.
+        //it might be on the right
+        //it might be on the left
+        //if it's on the right,
+        //if tabButtonBeingDragged's x is > nextTab.getX() + nextTab.getWidth() * 0.5, swap their position
+        auto previousTabIndex = idx - 1;
+        auto nextTabIndex = idx + 1;
+        auto previousTab = getTabButton( previousTabIndex );
+        auto nextTab = getTabButton( nextTabIndex );
+        /*
+        If there is no previousTab, you are in the leftmost position
+        else If there is no nextTab, you are in the right-most position
+        Otherwise you are in the middle of all the tabs.
+            If you are in the middle, you might be switching with the tab on your left, or the tab on your right.
+         */
+        if( previousTab == nullptr && nextTab != nullptr )
+        {
+            //you're in the 0th position (far left)
+            if( tabButtonBeingDragged->getX() > nextTab->getBounds().getCentreX() )
+            {
+                moveTab(idx, nextTabIndex);
+            }
+        }
+        else if( previousTab != nullptr && nextTab == nullptr )
+        {
+            //you're in the last position (far right)
+            if( tabButtonBeingDragged->getX() < previousTab->getBounds().getCentreX() )
+            {
+                moveTab(idx, previousTabIndex);
+            }
+        }
+        else
+        {
+            //you're in the middle
+            if( tabButtonBeingDragged->getX() > nextTab->getBounds().getCentreX() )
+            {
+                moveTab(idx, nextTabIndex);
+            }
+            else if( tabButtonBeingDragged->getX() < previousTab->getBounds().getCentreX() )
+            {
+                moveTab(idx, previousTabIndex);
+            }
+        }
+        
+    }
+}
+
+void ExtendedTabbedButtonBar::itemDragExit(const SourceDetails &dragSourceDetails)
+{
+    DBG("ExtendedTabbedButtonBar::itemDragExit");
+    juce::DragAndDropTarget::itemDragExit(dragSourceDetails);
 }
 
 void ExtendedTabbedButtonBar::itemDropped (const SourceDetails& dragSourceDetails) 
 {
-    
+    DBG( "item dropped" );
+    //find the dropped item.  lock the position in.
+}
+
+void ExtendedTabbedButtonBar::mouseDown(const juce::MouseEvent& e)
+{
+    DBG( "ExtendedTabbedButtonBar::mouseDown");
+    if( auto tabButtonBeingDragged = dynamic_cast<ExtendedTabBarButton*>( e.originalComponent ) )
+    {
+        startDragging(tabButtonBeingDragged->TabBarButton::getTitle(),
+                      tabButtonBeingDragged);
+    }
 }
 
 juce::TabBarButton* ExtendedTabbedButtonBar::createTabButton (const juce::String& tabName, int tabIndex)
 {
-    return new ExtendedTabBarButton(tabName, *this);
+    auto etbb = std::make_unique<ExtendedTabBarButton>(tabName, *this);
+    etbb->addMouseListener(this, false);
+    
+    return etbb.release();
 }
 
 //==============================================================================

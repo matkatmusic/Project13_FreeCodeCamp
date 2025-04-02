@@ -15,11 +15,27 @@
  https://forum.juce.com/t/draggabletabbedcomponent/13265/5?u=matkatmusic
  "You can create a subclass of TabbedButtonBar which is also a DragAndDropTarget. And you can create custom tab buttons which allow themselves to be dragged."
  */
-struct ExtendedTabbedButtonBar : juce::TabbedButtonBar, juce::DragAndDropTarget
+struct ExtendedTabbedButtonBar : juce::TabbedButtonBar, juce::DragAndDropTarget, juce::DragAndDropContainer
 {
     ExtendedTabbedButtonBar();
     bool isInterestedInDragSource (const SourceDetails& dragSourceDetails) override;
+    /*
+     Drag-to-reorder is accomplished by the TabbedButtonBar being a dragAndDrop Target and a DragAndDropContainer, and by listening to mouse events on each TabBarButton.
+     
+     the sequence flow is:
+     mouseDown on a tab.  this starts the DragAndDropContainer responding to mouseDrag events.
+     first, itemDragEnter is called when the first mouseEvent happens.
+     as the mouse is moved, itemDragMove() is called.  the tabBarButtons are constrained to the bounds of the ExtendedTabbedButtonBar, so they'll never be dragged outside of it.
+     
+     itemDragMove() checks the x coordinate of the item being dragged and compares it with its neighbors.
+     tab indexes are swapped if a tab crosses over the middle of another tab.
+     */
+    void itemDragEnter (const SourceDetails& dragSourceDetails) override;
+    void itemDragMove (const SourceDetails& dragSourceDetails) override;
+    void itemDragExit (const SourceDetails& dragSourceDetails) override;
     void itemDropped (const SourceDetails& dragSourceDetails) override;
+    
+    void mouseDown(const juce::MouseEvent& e) override;
     
     juce::TabBarButton* createTabButton (const juce::String& tabName, int tabIndex) override;
 };
