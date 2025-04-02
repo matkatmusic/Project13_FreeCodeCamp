@@ -17,10 +17,9 @@
  */
 struct ExtendedTabbedButtonBar : juce::TabbedButtonBar, juce::DragAndDropTarget
 {
-    ExtendedTabbedButtonBar() : juce::TabbedButtonBar(juce::TabbedButtonBar::Orientation::TabsAtTop) { }
-    
-    bool isInterestedInDragSource (const SourceDetails& dragSourceDetails) override { return false; }
-    void itemDropped (const SourceDetails& dragSourceDetails) override { }
+    ExtendedTabbedButtonBar();
+    bool isInterestedInDragSource (const SourceDetails& dragSourceDetails) override;
+    void itemDropped (const SourceDetails& dragSourceDetails) override;
     
     juce::TabBarButton* createTabButton (const juce::String& tabName, int tabIndex) override;
 };
@@ -49,18 +48,9 @@ struct ExtendedTabBarButton : juce::TabBarButton
     juce::ComponentDragger dragger;
     std::unique_ptr<HorizontalConstrainer> constrainer;
     
-    void mouseDown (const juce::MouseEvent& e)
-    {
-        toFront(true);
-        dragger.startDraggingComponent (this, e);
-        juce::TabBarButton::mouseDown(e);
-    }
+    void mouseDown (const juce::MouseEvent& e) override;
 
-    void mouseDrag (const juce::MouseEvent& e)
-    {
-        dragger.dragComponent (this, e, constrainer.get());
-    }
-    
+    void mouseDrag (const juce::MouseEvent& e) override;
 };
 //==============================================================================
 /**
