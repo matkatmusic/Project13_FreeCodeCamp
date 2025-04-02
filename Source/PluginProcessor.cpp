@@ -76,13 +76,10 @@ Project13AudioProcessor::Project13AudioProcessor()
                        )
 #endif
 {
-    dspOrder =
-    {{
-        DSP_Option::Phase,
-        DSP_Option::Chorus,
-        DSP_Option::OverDrive,
-        DSP_Option::LadderFilter,
-    }};
+    for( size_t i = 0; i < static_cast<size_t>(DSP_Option::END_OF_LIST); ++i )
+    {
+        dspOrder[i] = static_cast<DSP_Option>(i);
+    }
     
     auto floatParams = std::array
     {
@@ -534,6 +531,79 @@ void Project13AudioProcessor::MonoChannelDSP::updateDSPFromParams()
     ladderFilter.dsp.setDrive( p.ladderFilterDrive->get() );
     
     //TODO: update general filter coefficients here
+    auto sampleRate = p.getSampleRate();
+    //update generalFilter coefficients
+    //choices: peak, bandpass, notch, allpass
+    auto genMode = p.generalFilterMode->getIndex();
+    auto genHz = p.generalFilterFreqHz->get();
+    auto genQ = p.generalFilterQuality->get();
+    auto genGain = p.generalFilterGain->get();
+    
+    bool filterChanged = false;
+    filterChanged |= (filterFreq != genHz);
+    filterChanged |= (filterQ != genQ);
+    filterChanged |= (filterGain != genGain);
+    
+    auto updatedMode = static_cast<GeneralFilterMode>(genMode);
+    filterChanged |= (filterMode != updatedMode);
+    
+    if( filterChanged )
+    {
+        filterMode = updatedMode;
+        filterFreq = genHz;
+        filterQ = genQ;
+        filterGain = genGain;
+        
+        juce::dsp::IIR::Coefficients<float>::Ptr coefficients;
+        switch(filterMode)
+        {
+            case GeneralFilterMode::Peak:
+            {
+                coefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
+                                                                                   filterFreq,
+                                                                                   filterQ,
+                                                                                   juce::Decibels::decibelsToGain(filterGain));
+                break;
+            }
+            case GeneralFilterMode::Bandpass:
+            {
+                coefficients = juce::dsp::IIR::Coefficients<float>::makeBandPass(sampleRate, 
+                                                                                 filterFreq,
+                                                                                 filterQ);
+                break;
+            }
+            case GeneralFilterMode::Notch:
+            {
+                coefficients = juce::dsp::IIR::Coefficients<float>::makeNotch(sampleRate,
+                                                                              filterFreq,
+                                                                              filterQ);
+                break;
+            }
+            case GeneralFilterMode::Allpass:
+            {
+                coefficients = juce::dsp::IIR::Coefficients<float>::makeAllPass(sampleRate,
+                                                                                filterFreq,
+                                                                                filterQ);
+                break;
+            }
+            case GeneralFilterMode::END_OF_LIST:
+            {
+                jassertfalse;
+                break;
+            }
+        }
+        
+        if( coefficients != nullptr )
+        {
+//            if( generalFilter.dsp.coefficients->coefficients.size() != coefficients->coefficients.size() )
+//            {
+//                jassertfalse;
+//            }
+            
+            *generalFilter.dsp.coefficients = *coefficients;
+            generalFilter.reset();
+        }
+    }
 }
 
 void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -555,7 +625,7 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //[DONE]: create audio parameters for all dsp choices
     //[DONE]: update DSP here from audio parameters
     //[DONE]: bypass params for each DSP element
-    //TODO: update general filter corrections
+    //[DONE]: update general filter coefficients
     //TODO: add smoothers for all param updates
     //[DONE]: save/load settings
     //[DONE]: save/load DSP order
