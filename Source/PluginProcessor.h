@@ -70,6 +70,12 @@ public:
     
     using DSP_Order = std::array<DSP_Option, static_cast<size_t>(DSP_Option::END_OF_LIST)>;
     SimpleMBComp::Fifo<DSP_Order> dspOrderFifo;
+    
+    juce::AudioParameterFloat* phaserRateHz = nullptr;
+    juce::AudioParameterFloat* phaserCenterFreqHz = nullptr;
+    juce::AudioParameterFloat* phaserDepthPercent = nullptr;
+    juce::AudioParameterFloat* phaserFeedbackPercent = nullptr;
+    juce::AudioParameterFloat* phaserMixPercent = nullptr;
 private:
     DSP_Order dspOrder;
     
