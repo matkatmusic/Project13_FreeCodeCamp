@@ -845,8 +845,8 @@ bool Project13AudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* Project13AudioProcessor::createEditor()
 {
-//    return new Project13AudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor(*this);
+    return new Project13AudioProcessorEditor (*this);
+//    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
