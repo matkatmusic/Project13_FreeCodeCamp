@@ -51,7 +51,9 @@ struct ExtendedTabBarButton : juce::TabBarButton
     
     void mouseDown (const juce::MouseEvent& e)
     {
+        toFront(true);
         dragger.startDraggingComponent (this, e);
+        juce::TabBarButton::mouseDown(e);
     }
 
     void mouseDrag (const juce::MouseEvent& e)
