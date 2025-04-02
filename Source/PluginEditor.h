@@ -84,6 +84,8 @@ struct ExtendedTabBarButton : juce::TabBarButton
 
     void mouseDrag (const juce::MouseEvent& e) override;
     Project13AudioProcessor::DSP_Option getOption() const { return option; }
+    
+    int getBestTabLength (int depth) override;
 private:
     Project13AudioProcessor::DSP_Option option;
 };
