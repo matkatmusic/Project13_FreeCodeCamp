@@ -140,6 +140,16 @@ private:
     
 #define VERIFY_BYPASS_FUNCTIONALITY false
     
+    template<typename ParamType, typename Params, typename Funcs>
+    void initCachedParams(Params paramsArray, Funcs funcsArray)
+    {
+        for( size_t i = 0; i < paramsArray.size(); ++i )
+        {
+            auto ptrToParamPtr = paramsArray[i];
+            *ptrToParamPtr = dynamic_cast<ParamType>(apvts.getParameter( funcsArray[i]() ));
+            jassert( *ptrToParamPtr != nullptr );
+        }
+    }
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Project13AudioProcessor)
 };
