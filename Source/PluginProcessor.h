@@ -10,6 +10,18 @@
 
 #include <JuceHeader.h>
 #include <Fifo.h>
+
+static constexpr int NEGATIVE_INFINITY = -72;
+static constexpr int MAX_DECIBELS = 12;
+
+enum class GeneralFilterMode
+{
+    Peak,
+    Bandpass,
+    Notch,
+    Allpass,
+    END_OF_LIST
+};
 //==============================================================================
 /**
 */
@@ -123,15 +135,7 @@ public:
     generalFilterGainSmoother;
     
     juce::Atomic<bool> guiNeedsLatestDspOrder { false };
-    
-    enum class GeneralFilterMode
-    {
-        Peak,
-        Bandpass,
-        Notch,
-        Allpass,
-        END_OF_LIST
-    };
+    juce::Atomic<float> leftPreRMS, rightPreRMS, leftPostRMS, rightPostRMS;
     
     std::vector< juce::RangedAudioParameter* > getParamsForOption(DSP_Option option);
     
