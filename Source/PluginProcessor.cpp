@@ -81,6 +81,8 @@ Project13AudioProcessor::Project13AudioProcessor()
         dspOrder[i] = static_cast<DSP_Option>(i);
     }
     
+    restoreDspOrderFifo.push(dspOrder);
+    
     auto floatParams = std::array
     {
         &phaserRateHz,
