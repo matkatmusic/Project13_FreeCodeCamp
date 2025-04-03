@@ -825,7 +825,7 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //[DONE]: bypass params for each DSP element
     //[DONE]: update general filter coefficients
     //[DONE]: add smoothers for all param updates
-    //TODO: in/out gain controls
+    //[DONE]: in/out gain controls
     //[DONE]: save/load settings
     //[DONE]: save/load DSP order
     //[DONE]: bypass DSP
@@ -836,7 +836,9 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //[DONE]: restore tabs in GUI when loading settings
     //TODO: save/load preset [BONUS]
     //TODO: GUI design for each DSP instance?
-    //TODO: fix graphic issue when dragging tab over bypass button
+    //TODO: restore selected tab when window opens
+    //TODO: bypass button should toggle RotarySlider enablement
+    //[DONE]: fix graphic issue when dragging tab over bypass button
     //[DONE]: add bypass button to tabs
     //[DONE]: make selected tab more obvious
     //[DONE]: mouse-down on tab (during drag) should change DSP_Gui
