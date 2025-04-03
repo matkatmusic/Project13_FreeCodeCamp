@@ -141,6 +141,11 @@ private:
     DSP_Gui dspGUI { audioProcessor };
     ExtendedTabbedButtonBar tabbedComponent;
     
+    static constexpr int meterWidth = 80;
+    static constexpr int fontHeight = 24;
+    static constexpr int tickIndent = 8;
+    static constexpr int meterChanWidth = 24;
+    
     std::unique_ptr<juce::ParameterAttachment> selectedTabAttachment;
     
     void addTabsFromDSPOrder(Project13AudioProcessor::DSP_Order);

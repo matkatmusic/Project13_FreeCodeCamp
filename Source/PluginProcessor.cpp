@@ -812,7 +812,7 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //[DONE]: restore tab order when window opens first time (after quit)
     //[DONE]: restore tabs when closing/opening window (no quit)
     //[DONE]: restore selected tab when closing/opening window (no quit)
-    //TODO: metering
+    //[DONE]: metering
     //[DONE]: prepare all DSP
     //TODO: wet/dry knob [BONUS]
     //TODO: mono & stereo versions [mono is BONUS]
