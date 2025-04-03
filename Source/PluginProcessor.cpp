@@ -709,7 +709,7 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //TODO: Drag-To-Reorder GUI
     //[DONE]: snap dropped tabs to the correct position
     //[DONE]: hide dragged tab image or stop dragging the tab and constrain dragged image to x axis only
-    //TODO: restore tabs in GUI when loading settings
+    //[DONE]: restore tabs in GUI when loading settings
     //TODO: save/load preset [BONUS]
     //TODO: GUI design for each DSP instance?
     //TODO: metering
@@ -928,6 +928,7 @@ void Project13AudioProcessor::setStateInformation (const void* data, int sizeInB
         {
             auto order = juce::VariantConverter<Project13AudioProcessor::DSP_Order>::fromVar(apvts.state.getProperty("dspOrder"));
             dspOrderFifo.push(order);
+            restoreDspOrderFifo.push(order);
         }
         DBG( apvts.state.toXmlString() );
         
