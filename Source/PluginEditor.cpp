@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 #include <RotarySliderWithLabels.h>
 #include <Utilities.h>
+#include <CustomButtons.h>
 
 static juce::String getNameFromDSPOption(Project13AudioProcessor::DSP_Option option)
 {
@@ -353,6 +354,30 @@ void ExtendedTabbedButtonBar::mouseDown(const juce::MouseEvent& e)
     }
 }
 
+struct PowerButtonWithParam : PowerButton
+{
+    PowerButtonWithParam(juce::RangedAudioParameter* p);
+    void changeAttachment(juce::RangedAudioParameter* p);
+private:
+    std::unique_ptr<juce::ButtonParameterAttachment> attachment;
+};
+
+PowerButtonWithParam::PowerButtonWithParam(juce::RangedAudioParameter* p)
+{
+    jassert(p != nullptr);
+    changeAttachment(p);
+}
+
+void PowerButtonWithParam::changeAttachment(juce::RangedAudioParameter* p)
+{
+    attachment.reset();
+    if( p != nullptr )
+    {
+        attachment = std::make_unique<juce::ButtonParameterAttachment>(*p, *this);
+        attachment->sendInitialUpdate();
+    }
+}
+
 juce::TabBarButton* ExtendedTabbedButtonBar::createTabButton (const juce::String& tabName, int tabIndex)
 {
     auto dspOption = getDSPOptionFromName(tabName);
@@ -460,9 +485,10 @@ void DSP_Gui::rebuildInterface( std::vector< juce::RangedAudioParameter* > param
         else if( auto* toggle = dynamic_cast<juce::AudioParameterBool*>(p) )
         {
             //make a toggle button
-            buttons.push_back(std::make_unique<juce::ToggleButton>("Bypass"));
-            auto& btn = *buttons.back();
-            buttonAttachments.push_back(std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processor.apvts, p->getName(100), btn));
+//            buttons.push_back(std::make_unique<juce::ToggleButton>("Bypass"));
+//            auto& btn = *buttons.back();
+//            buttonAttachments.push_back(std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processor.apvts, p->getName(100), btn));
+            DBG( "DSP_Gui::rebuild interface skipping APVTS::ButtonAttachment for AudioParameterBool: " << p->getName(100));
         }
         else
         {
@@ -686,6 +712,40 @@ void Project13AudioProcessorEditor::addTabsFromDSPOrder(Project13AudioProcessor:
     {
         tabbedComponent.addTab(getNameFromDSPOption(v), juce::Colours::white, -1);
     }
+    
+    /*
+     Bypass buttons are added to the tabs AFTER they have been created and added to the tabbed component.
+     The mechanism used is kind of ugly
+     the DSP order is used to retrieve the params for a DSP_Option.
+     then the params are searched. We are looking for an AudioParameterBool instance.
+     then the found AudioParameterBool is checked to see if the param name contains "bypass".
+     If those two conditions are met, the bypass param has been found.
+     now the button can be created, configured, and added to the tab as an extra component.
+     */
+    
+    auto numTabs = tabbedComponent.getNumTabs();
+    auto size = tabbedComponent.getHeight();
+    for( int i = 0; i < numTabs; ++i )
+    {
+        if( auto tab = tabbedComponent.getTabButton(i) )
+        {
+            auto order = newOrder[i];
+            auto params = audioProcessor.getParamsForOption(order);
+            for( auto p : params )
+            {
+                if( auto bypass = dynamic_cast<juce::AudioParameterBool*>(p))
+                {
+                    if( bypass->name.containsIgnoreCase("bypass") )
+                    {
+                        auto pbwp = std::make_unique<PowerButtonWithParam>(bypass);
+                        pbwp->setSize(size, size);
+                        tab->setExtraComponent(pbwp.release(), juce::TabBarButton::ExtraComponentPlacement::beforeText);
+                    }
+                }
+            }
+        }
+    }
+    
     
     rebuildInterface();
     //if the order is identical to the current order used by the audio side, this push will do nothing.
