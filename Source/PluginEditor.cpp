@@ -430,6 +430,7 @@ Project13AudioProcessorEditor::Project13AudioProcessorEditor (Project13AudioProc
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+    setLookAndFeel(&lookAndFeel);
     addAndMakeVisible(tabbedComponent);
     addAndMakeVisible(dspGUI);
     
@@ -440,6 +441,7 @@ Project13AudioProcessorEditor::Project13AudioProcessorEditor (Project13AudioProc
 
 Project13AudioProcessorEditor::~Project13AudioProcessorEditor()
 {
+    setLookAndFeel(nullptr);
     tabbedComponent.removeListener(this);
 }
 
