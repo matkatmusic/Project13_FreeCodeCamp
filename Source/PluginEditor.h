@@ -148,6 +148,10 @@ private:
     static constexpr int fontHeight = 24;
     static constexpr int tickIndent = 8;
     static constexpr int meterChanWidth = 24;
+    static constexpr int ioControlSize = 100;
+    
+    std::unique_ptr<RotarySliderWithLabels> inGainControl, outGainControl;
+    std::unique_ptr<juce::SliderParameterAttachment> inGainAttachment, outGainAttachment;
     
     std::unique_ptr<juce::ParameterAttachment> selectedTabAttachment;
     
