@@ -346,11 +346,49 @@ void ExtendedTabbedButtonBar::mouseDown(const juce::MouseEvent& e)
         if( idx != -1 )
         {
             setCurrentTabIndex(idx);
+            setTabColours();
         }
         
         startDragging(tabButtonBeingDragged->TabBarButton::getTitle(),
                       tabButtonBeingDragged,
                       dragImage);
+    }
+}
+
+/*
+ In order to change the color of the selected tab, a few things needed to be investigated:
+ 1) how is the button painted?
+ 2) where is the color set?
+ 
+ 1) was answered by looking in juce_TabbedButtonBar to look for a `TabbedBarButton::paint` function.
+    one does not exist.
+    instead a paintButton() function exists.
+    Internally this paintButton() function used a LookAndFeel function to draw the button.
+ Now we can investigate the LookAndFeel function to see how the button is painted and filled with whatever color it is filled with.
+ that leads to this line in the LNF implementation:
+ 
+ const Colour bkg (button.getTabBackgroundColour());
+ 
+ This lets us begin to answer #2:
+ 2) Where is the color set?
+ Here are the steps to answer that and see how we can leverage this value:
+ 
+ - figure out where the color being used to paint the button was being set. answer: TabbedButtonBar::addTab() parameter
+ - figure out where that color is being stored: answer: on the TabInfo itself, which owns the button
+ - figure out how to change that color: Answer: yes, via  TabbedButtonBar::setTabBackgroundColour()
+ - figure out if changing that color during the mousedown event would suffice: answer: yes
+ - figure out why that color isn't shown when the plugin first launches: answer: color is only changed when mouse-down occurs.  solution is to refactor code that changes color into a function and call it during mousedown AND when tabs are created/added
+
+ */
+
+void ExtendedTabbedButtonBar::setTabColours()
+{
+    auto tabs = getTabs();
+    for( int i = 0; i < tabs.size(); ++i )
+    {
+        auto color = tabs[i]->isFrontTab() ? juce::Colours::skyblue : juce::Colours::darkgrey;
+        setTabBackgroundColour(i, color);
+        tabs[i]->repaint();
     }
 }
 
@@ -762,7 +800,7 @@ void Project13AudioProcessorEditor::addTabsFromDSPOrder(Project13AudioProcessor:
         }
     }
     
-    
+    tabbedComponent.setTabColours();
     rebuildInterface();
     //if the order is identical to the current order used by the audio side, this push will do nothing.
     audioProcessor.dspOrderFifo.push(newOrder);
