@@ -92,15 +92,21 @@ private:
 
 struct DSP_Gui : juce::Component
 {
-    DSP_Gui() {}
+    DSP_Gui(Project13AudioProcessor& p) : processor(p) {}
     
-    void resized() override {}
-    void paint( juce::Graphics& g ) override { g.fillAll(juce::Colours::red); }
+    void resized() override;
+    void paint( juce::Graphics& g ) override;
     
     void rebuildInterface( std::vector< juce::RangedAudioParameter* > params );
     
+    Project13AudioProcessor& processor;
     std::vector< std::unique_ptr<juce::Slider> > sliders;
-    std::vector< std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> > attachments;
+    std::vector< std::unique_ptr<juce::ComboBox> > comboBoxes;
+    std::vector< std::unique_ptr<juce::Button> > buttons;
+    
+    std::vector< std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> > sliderAttachments;
+    std::vector< std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> > comboBoxAttachments;
+    std::vector< std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> > buttonAttachments;
 };
 //==============================================================================
 /**
@@ -124,10 +130,11 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     Project13AudioProcessor& audioProcessor;
-    DSP_Gui dspGUI;
+    DSP_Gui dspGUI { audioProcessor };
     ExtendedTabbedButtonBar tabbedComponent;
     
     void addTabsFromDSPOrder(Project13AudioProcessor::DSP_Order);
+    void rebuildInterface();
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Project13AudioProcessorEditor)
 };
