@@ -10,7 +10,6 @@
 #include "PluginEditor.h"
 #include <RotarySliderWithLabels.h>
 #include <Utilities.h>
-#include <CustomButtons.h>
 
 static juce::String getNameFromDSPOption(Project13AudioProcessor::DSP_Option option)
 {
@@ -441,25 +440,18 @@ void ExtendedTabbedButtonBar::setTabColours()
     }
 }
 
-struct PowerButtonWithParam : PowerButton
-{
-    PowerButtonWithParam(juce::RangedAudioParameter* p);
-    void changeAttachment(juce::RangedAudioParameter* p);
-private:
-    std::unique_ptr<juce::ButtonParameterAttachment> attachment;
-};
-
-PowerButtonWithParam::PowerButtonWithParam(juce::RangedAudioParameter* p)
+PowerButtonWithParam::PowerButtonWithParam(juce::AudioParameterBool* p)
 {
     jassert(p != nullptr);
     changeAttachment(p);
 }
 
-void PowerButtonWithParam::changeAttachment(juce::RangedAudioParameter* p)
+void PowerButtonWithParam::changeAttachment(juce::AudioParameterBool* p)
 {
     attachment.reset();
     if( p != nullptr )
     {
+        param = p;
         attachment = std::make_unique<juce::ButtonParameterAttachment>(*p, *this);
         attachment->sendInitialUpdate();
     }
@@ -612,6 +604,16 @@ void DSP_Gui::rebuildInterface( std::vector< juce::RangedAudioParameter* > param
         addAndMakeVisible(btn.get());
     
     resized();
+}
+
+void DSP_Gui::toggleSliderEnablement(bool enabled)
+{
+    for( auto& slider : sliders )
+        slider->setEnabled(enabled);
+    for( auto& cb : comboBoxes)
+        cb->setEnabled(enabled);
+    for( auto& btn : buttons )
+        btn->setEnabled(enabled);
 }
 //==============================================================================
 Project13AudioProcessorEditor::Project13AudioProcessorEditor (Project13AudioProcessor& p)
@@ -853,17 +855,27 @@ void Project13AudioProcessorEditor::addTabsFromDSPOrder(Project13AudioProcessor:
         {
             auto order = newOrder[i];
             auto params = audioProcessor.getParamsForOption(order);
-            for( auto p : params )
+            if( auto bypass = findBypassParam(params) )
             {
-                if( auto bypass = dynamic_cast<juce::AudioParameterBool*>(p))
+                auto pbwp = std::make_unique<PowerButtonWithParam>(bypass);
+                pbwp->setSize(size, size);
+                
+                pbwp->onClick = [this, btn = pbwp.get()]()
                 {
-                    if( bypass->name.containsIgnoreCase("bypass") )
+                    /*
+                     if the button that was clicked is the same button on the active tab, refresh the slider enablement on the DSP GUI
+                     */
+                    auto idx = tabbedComponent.getCurrentTabIndex();
+                    if( auto tabButton = tabbedComponent.getTabButton(idx) )
                     {
-                        auto pbwp = std::make_unique<PowerButtonWithParam>(bypass);
-                        pbwp->setSize(size, size);
-                        tab->setExtraComponent(pbwp.release(), juce::TabBarButton::ExtraComponentPlacement::beforeText);
+                        if( tabButton->getExtraComponent() == btn )
+                        {
+                            refreshDSPGUIControlEnablement(btn);
+                        }
                     }
-                }
+                };
+                
+                tab->setExtraComponent(pbwp.release(), juce::TabBarButton::ExtraComponentPlacement::beforeText);
             }
         }
     }
@@ -884,6 +896,10 @@ void Project13AudioProcessorEditor::rebuildInterface()
         auto params = audioProcessor.getParamsForOption(option);
         jassert(params.empty() == false);
         dspGUI.rebuildInterface(params);
+        if( auto btn = dynamic_cast<PowerButtonWithParam*>(etbb->getExtraComponent()))
+        {
+            refreshDSPGUIControlEnablement(btn);
+        }
     }
 }
 
@@ -912,5 +928,24 @@ void Project13AudioProcessorEditor::selectedTabChanged(int newCurrentTabIndex)
          */
         tabbedComponent.setTabColours();
         selectedTabAttachment->setValueAsCompleteGesture(static_cast<float>(newCurrentTabIndex));
+    }
+}
+
+/*
+ Enabling the bypass buttons to control the slider enablement requires a few steps
+ 1) the button on-click must be configured to toggle the DSP GUI slider enablement
+ 2) the on-click must only toggle it if the button being clicked is the button in the currently selected tab
+ 3) the dspGUI needs to have a mechanism to toggle the slider enablement
+ 4) the dspGUI needs to toggle the enablement whenever it rebuilds itself.
+ */
+void Project13AudioProcessorEditor::refreshDSPGUIControlEnablement( PowerButtonWithParam* button)
+{
+    if( button != nullptr )
+    {
+        if( auto bypass = button->getParam() )
+        {
+            //if bypassed is true, enablement should be false
+            dspGUI.toggleSliderEnablement( bypass->get() == false );
+        }
     }
 }
