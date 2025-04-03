@@ -903,6 +903,14 @@ void Project13AudioProcessorEditor::selectedTabChanged(int newCurrentTabIndex)
     if( selectedTabAttachment )
     {
         rebuildInterface();
+        /*
+         When the synth first launches, this callback is triggered from the `selectedTabAttachment->sendInitialUpdate()` call in `timerCallback()`
+         every time the currentTabIndex changes, we want to refresh the tab colors.
+         Previously, we were changing tab colours from addTabsFromDSPOrder() and when the tab is clicked.
+         For some reason, addTabsFromDSPOrder() wasn't changing the tab color.
+         calling it here ensures that the tab color changes.
+         */
+        tabbedComponent.setTabColours();
         selectedTabAttachment->setValueAsCompleteGesture(static_cast<float>(newCurrentTabIndex));
     }
 }
