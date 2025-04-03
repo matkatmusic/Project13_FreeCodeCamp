@@ -785,9 +785,11 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //TODO: add bypass button to tabs
     //TODO: make selected tab more obvious
     //TODO: mouse-down on tab (during drag) should change DSP_Gui
-    //TODO: replace vertical sliders with SimpleMBComp rotary Sliders
+    //[DONE]: replace vertical sliders with SimpleMBComp rotary Sliders
     //TODO: replace Comboboxes with SimpleMBComp combobox
-    //TODO: replace bypass buttons with SimpleMBComp bypass buttons.
+    //[DONE]: replace bypass buttons with SimpleMBComp bypass buttons.
+    //TODO: restore selected tab when window opens
+    //TODO: restore tab order when window opens
     //TODO: metering
     //[DONE]: prepare all DSP
     //TODO: wet/dry knob [BONUS]
