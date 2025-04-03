@@ -809,9 +809,9 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //[DONE]: replace bypass buttons with SimpleMBComp bypass buttons.
     //[DONE]: restore selected tab when window opens
     //[DONE]: restore tab order when window opens
-    //TODO: restore tab order when windo opens first time (after quit)
-    //TODO: restore tabs when closing/opening window (no quit)
-    //TODO: restore selected tab when closing/opening window (no quit)
+    //[DONE]: restore tab order when window opens first time (after quit)
+    //[DONE]: restore tabs when closing/opening window (no quit)
+    //[DONE]: restore selected tab when closing/opening window (no quit)
     //TODO: metering
     //[DONE]: prepare all DSP
     //TODO: wet/dry knob [BONUS]
@@ -838,6 +838,17 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //if you pulled, replace dspOrder;
     if( newDSPOrder != DSP_Order() )
         dspOrder = newDSPOrder;
+    
+    /*
+     when the plugin is first loaded, if the gui is closed and reopened, the restoreDspOrderFifo is empty.
+     the restoreDspOrderFifo is only populated when setStateInformation is called.
+     an atomic flag is used by the editor to signal that it needs the latest dspOrder
+     here is where we check that flag and push a copy of dspOrder into the restoreDspOrderFifo for the GUI to retrieve in its timer callback.
+     */
+    if( guiNeedsLatestDspOrder.compareAndSetBool(false, true) )
+    {
+        restoreDspOrderFifo.push(dspOrder);
+    }
     
 //    auto block = juce::dsp::AudioBlock<float>(buffer);
 //    leftChannel.process(block.getSingleChannelBlock(0), dspOrder);

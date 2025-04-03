@@ -444,6 +444,8 @@ Project13AudioProcessorEditor::Project13AudioProcessorEditor (Project13AudioProc
     addAndMakeVisible(tabbedComponent);
     addAndMakeVisible(dspGUI);
     
+    audioProcessor.guiNeedsLatestDspOrder.set(true);
+    
     tabbedComponent.addListener(this);
     startTimerHz(30);
     setSize (600, 400);
