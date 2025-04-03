@@ -89,6 +89,19 @@ struct ExtendedTabBarButton : juce::TabBarButton
 private:
     Project13AudioProcessor::DSP_Option option;
 };
+
+struct DSP_Gui : juce::Component
+{
+    DSP_Gui() {}
+    
+    void resized() override {}
+    void paint( juce::Graphics& g ) override { g.fillAll(juce::Colours::red); }
+    
+    void rebuildInterface( std::vector< juce::RangedAudioParameter* > params );
+    
+    std::vector< std::unique_ptr<juce::Slider> > sliders;
+    std::vector< std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> > attachments;
+};
 //==============================================================================
 /**
 */
@@ -111,7 +124,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     Project13AudioProcessor& audioProcessor;
-    
+    DSP_Gui dspGUI;
     ExtendedTabbedButtonBar tabbedComponent;
     
     void addTabsFromDSPOrder(Project13AudioProcessor::DSP_Order);
