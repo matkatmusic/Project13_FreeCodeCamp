@@ -4,6 +4,19 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20">
   <MAINGROUP id="jXVMvd" name="Project13">
     <GROUP id="{9599FCC3-1EB7-A668-23ED-93BE4AF42C8A}" name="Source">
+      <GROUP id="{D7914B14-154F-FB88-E638-CCCD833E9763}" name="GUI">
+        <FILE id="jQof97" name="CustomButtons.cpp" compile="1" resource="0"
+              file="SimpleMultiBandComp/Source/GUI/CustomButtons.cpp"/>
+        <FILE id="wXhflj" name="CustomButtons.h" compile="0" resource="0" file="SimpleMultiBandComp/Source/GUI/CustomButtons.h"/>
+        <FILE id="O2iKxn" name="LookAndFeel.cpp" compile="1" resource="0" file="SimpleMultiBandComp/Source/GUI/LookAndFeel.cpp"/>
+        <FILE id="EJcesG" name="LookAndFeel.h" compile="0" resource="0" file="SimpleMultiBandComp/Source/GUI/LookAndFeel.h"/>
+        <FILE id="bTAeOw" name="RotarySliderWithLabels.cpp" compile="1" resource="0"
+              file="SimpleMultiBandComp/Source/GUI/RotarySliderWithLabels.cpp"/>
+        <FILE id="nuJ3eQ" name="RotarySliderWithLabels.h" compile="0" resource="0"
+              file="SimpleMultiBandComp/Source/GUI/RotarySliderWithLabels.h"/>
+        <FILE id="ffX6PJ" name="Utilities.cpp" compile="1" resource="0" file="SimpleMultiBandComp/Source/GUI/Utilities.cpp"/>
+        <FILE id="hVDxBv" name="Utilities.h" compile="0" resource="0" file="SimpleMultiBandComp/Source/GUI/Utilities.h"/>
+      </GROUP>
       <GROUP id="{35B36E0C-34A9-DF13-A848-5A757132EB08}" name="DSP">
         <FILE id="oJD0y6" name="Fifo.h" compile="0" resource="0" file="SimpleMultiBandComp/Source/DSP/Fifo.h"/>
       </GROUP>
