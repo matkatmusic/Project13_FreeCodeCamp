@@ -807,8 +807,11 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //[DONE]: replace vertical sliders with SimpleMBComp rotary Sliders
     //TODO: replace Comboboxes with SimpleMBComp combobox
     //[DONE]: replace bypass buttons with SimpleMBComp bypass buttons.
-    //TODO: restore selected tab when window opens
-    //TODO: restore tab order when window opens
+    //[DONE]: restore selected tab when window opens
+    //[DONE]: restore tab order when window opens
+    //TODO: restore tab order when windo opens first time (after quit)
+    //TODO: restore tabs when closing/opening window (no quit)
+    //TODO: restore selected tab when closing/opening window (no quit)
     //TODO: metering
     //[DONE]: prepare all DSP
     //TODO: wet/dry knob [BONUS]
