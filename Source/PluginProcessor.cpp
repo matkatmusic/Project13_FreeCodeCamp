@@ -803,7 +803,7 @@ void Project13AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //TODO: GUI design for each DSP instance?
     //TODO: add bypass button to tabs
     //TODO: make selected tab more obvious
-    //TODO: mouse-down on tab (during drag) should change DSP_Gui
+    //[DONE]: mouse-down on tab (during drag) should change DSP_Gui
     //[DONE]: replace vertical sliders with SimpleMBComp rotary Sliders
     //TODO: replace Comboboxes with SimpleMBComp combobox
     //[DONE]: replace bypass buttons with SimpleMBComp bypass buttons.
