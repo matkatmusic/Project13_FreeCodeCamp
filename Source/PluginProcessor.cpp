@@ -62,7 +62,7 @@ auto getGeneralFilterQualityName() { return juce::String("General Filter Quality
 auto getGeneralFilterGainName() { return juce::String("General Filter Gain"); }
 auto getGeneralFilterBypassName() { return juce::String("General Filter Bypass"); }
 
-
+auto getSelectedTabName() { return juce::String("Selected Tab"); }
 //==============================================================================
 Project13AudioProcessor::Project13AudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -168,6 +168,18 @@ Project13AudioProcessor::Project13AudioProcessor()
     };
     
     initCachedParams<juce::AudioParameterBool*>(bypassParams, bypassNameFuncs);
+    
+    auto intParams = std::array
+    {
+        &selectedTab
+    };
+    
+    auto intFuncs = std::array
+    {
+        &getSelectedTabName
+    };
+    
+    initCachedParams<juce::AudioParameterInt*>(intParams, intFuncs);
     
 }
 
@@ -584,6 +596,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout Project13AudioProcessor::cre
        "dB"));
     name = getGeneralFilterBypassName();
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{name, versionHint}, name, false));
+    
+    name = getSelectedTabName();
+    layout.add(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{name, versionHint},
+                                                         name,
+                                                         0,
+                                                         static_cast<int>(DSP_Option::END_OF_LIST) - 1,
+                                                         static_cast<int>(DSP_Option::Chorus)));
     
     return layout;
 }
