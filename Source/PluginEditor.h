@@ -113,6 +113,8 @@ struct DSP_Gui : juce::Component
     std::vector< std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> > sliderAttachments;
     std::vector< std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> > comboBoxAttachments;
     std::vector< std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> > buttonAttachments;
+    
+    std::vector< juce::RangedAudioParameter* > currentParams;
 };
 //==============================================================================
 /**
