@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="YASwP1" name="Project13" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20"
-              pluginChannelConfigs="{2, 2}">
-  <MAINGROUP id="jXVMvd" name="Project13">
+<JUCERPROJECT id="YASwP1" name="Project13_FreeCodeCamp" projectType="audioplug"
+              useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1"
+              cppLanguageStandard="20" pluginChannelConfigs="{2, 2}" companyWebsite="www.pfmcpp.com"
+              companyName="Matkat Music LLC" companyCopyright="2025" pluginManufacturerCode="Mktm"
+              pluginCode="Pf13">
+  <MAINGROUP id="jXVMvd" name="Project13_FreeCodeCamp">
     <GROUP id="{9599FCC3-1EB7-A668-23ED-93BE4AF42C8A}" name="Source">
       <GROUP id="{D7914B14-154F-FB88-E638-CCCD833E9763}" name="GUI">
         <FILE id="Wt5UrJ" name="AnalyzerPathGenerator.h" compile="0" resource="0"
